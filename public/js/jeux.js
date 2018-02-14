@@ -1,11 +1,11 @@
-
 var defaultActionsRed = ["rougeRD", "rouge1", "rouge2", "rouge3", "rouge4", "rouge5"];
 var defaultActionsBlue = ["bleuFD", "bleu1", "bleu2", "bleu3", "bleu4", "bleu5"];
 
-var redActionsSelected=["","","","",""];
-var blueActionsSelected=["","","","",""];
+var redActionsSelected = ["", "", "", "", ""];
+var blueActionsSelected = ["", "", "", "", ""];
 var indice = 0;
 var tmp;
+
 
 var tableBasicFlagRed = [new Position(3, 0), new Position(5, 0), new Position(4, 7), new Position(4, 8)];
 
@@ -19,24 +19,27 @@ document.addEventListener("DOMContentLoaded", function () {
     displayGrid();
     document.getElementById("redActions").addEventListener("click", function () {
         var blocActions = document.getElementById("blocActions");
-        var imgRouge = ["nord-rouge","est-rouge","ouest-rouge","sud-rouge", "prendre-rouge", "deposer-rouge", "repousser-rouge", "annuler-rouge", "x2-rouge", "pause-rouge", "est-x2-rouge"];
+        var imgRouge = ["nord-rouge", "est-rouge", "ouest-rouge", "sud-rouge", "prendre-rouge", "deposer-rouge", "repousser-rouge", "annuler-rouge", "x2-rouge", "pause-rouge", "est-x2-rouge"];
         displayRobotActions(blocActions, imgRouge, "actionsPlayerRed");
     });
 
     document.getElementById("blueActions").addEventListener("click", function () {
         var blocActions = document.getElementById("blocActions");
-        var imgBlue = ["nord-bleu","est-bleu","ouest-bleu","sud-bleu", "prendre-bleu", "deposer-bleu", "repousser-bleu", "annuler-bleu", "x2-bleu", "pause-bleu", "ouest-x2-bleu"];
+        var imgBlue = ["nord-bleu", "est-bleu", "ouest-bleu", "sud-bleu", "prendre-bleu", "deposer-bleu", "repousser-bleu", "annuler-bleu", "x2-bleu", "pause-bleu", "ouest-x2-bleu"];
         displayRobotActions(blocActions, imgBlue, "actionsPlayerBlue");
     });
 
     displayDefaultAction("actionsPlayerRed", defaultActionsRed);
     displayDefaultAction("actionsPlayerBlue", defaultActionsBlue);
 
+    document.getElementById("play").addEventListener("click", playGame);
+
+
 
 });
 
 function displayDefaultAction(element, tabActions) {
-   
+
     var actionsPlayer = document.querySelector("." + element);
     actionsPlayer.innerHTML = '';
     for (var i = 0; i < 6; i++) {
@@ -47,6 +50,7 @@ function displayDefaultAction(element, tabActions) {
         }
     }
 }
+
 function displayRobotActions(blocActions, tabImg, element) {
     blocActions.innerHTML = '<h3> Les actions :</h3><div id="fermer" onclick="fermer(\'' + element + '\')">X</div>';
     for (var i = 0; i < tabImg.length; i++) {
@@ -57,7 +61,7 @@ function displayRobotActions(blocActions, tabImg, element) {
 }
 
 function fermer(element) {
-    
+
     document.getElementById("blocActions").style.display = "none";
     if (indice > 0) {
         if (element == "actionsPlayerRed") {
@@ -65,7 +69,7 @@ function fermer(element) {
         } else {
             displayDefaultAction(element, defaultActionsBlue);
         }
-        
+
     }
     indice = 0;
 }
@@ -80,28 +84,27 @@ function unblockButtons(el) {
         boutonJeu.style.cursor = "pointer";
         boutonJeu.disabled = false;
     }
-    
+
 }
 
 
 function selectAction(action, actionsRobot) {
     if (indice < 5) {
         var actionSelected = action.getAttribute("for");
-        
-        var player1 = document.querySelector('.'+actionsRobot);
-        
+
+        var player1 = document.querySelector('.' + actionsRobot);
+
         var action = player1.getElementsByTagName("label");
-        
+
         action[indice].children[0].src = "../images/" + actionSelected + ".png";
-        
-        if(actionsRobot == "actionsPlayerRed"){
-            
-            redActionsSelected[indice]=actionSelected;
+
+        if (actionsRobot == "actionsPlayerRed") {
+
+            redActionsSelected[indice] = actionSelected;
+        } else {
+            blueActionsSelected[indice] = actionSelected;
         }
-        else{
-            blueActionsSelected[indice]=actionSelected;
-        }
-        
+
         if (tmp > indice) {
             indice = tmp;
             tmp = undefined;
@@ -166,17 +169,17 @@ function Case(position, isOccupedByRobot = false, colorFlag = "", isOccupedByFla
 var Robot = {
     constructor: function (color) {
         this.color = color;
-        this.flag = "";
+
 
         if (color === "red") {
             this.currentDirection = 'EAST';
             var tmp = basicPositionTableRed[getRandomIntInclusive(0, 3)];
-            this.currentCase = new Position(tmp.x,tmp.y);
+            this.currentCase = new Position(4, 7);
             this.currentCase.isOccupedByRobot = true;
         } else if (color === "blue") {
             this.currentDirection = 'WEST';
             var tmp = basicPositionTableBlue[getRandomIntInclusive(0, 3)]
-            this.currentCase = tmp;
+            this.currentCase = new Position(tmp.x, tmp.y);
             this.currentCase.isOccupedByRobot = true;
 
         }
@@ -186,7 +189,7 @@ var Robot = {
 
     //Avancer deux fois;
     twiceAdvance: function () {
-        console.log(this.color);
+        console.log("jerome");
         if (this.color === "red") {
             if (this.currentCase.x + 2 > 8) {
                 alert('Votre robot ne peut pas sortir du plateau de jeu');
@@ -195,23 +198,29 @@ var Robot = {
                 //this.currentCase.isOccuped = false;
             }
         } else if (this.color === "blue") {
+            console.log("Ayme");
             if (this.currentCase.x - 2 < 0) {
                 alert('Votre robot ne peut pas sortir du plateau de jeu');
             } else {
-                this.position.x -= 2;
+                this.currentCase.x -= 2;
             }
         }
     },
 
     //Prendre un drapeau
-    takeFlag: function () {
-        console.log("Aurevoir");
-        console.log(this.currentCase.isOccupedByFlag);
-        if (this.currentCase.isOccupedByFlag) {
-            this.flag = this.currentCase.hasFlag;
-            this.currentCase.hasFlag = "";
-            this.flag.currentCase = this.currentCase;
-            console.log("bonjour");
+    takeFlag: function (plateau) {
+        console.log(this.currentCase.x, this.currentCase.y);
+        console.log(plateau.grid[this.currentCase.x][this.currentCase.y].isOccupedByFlag);
+        if (plateau.grid[this.currentCase.x][this.currentCase.y].isOccupedByFlag) {
+
+            for (var i = 0; i < 4; i++) {
+                if (tableBasicFlagRed[i].x === this.currentCase.x && tableBasicFlagRed[i].y === this.currentCase.y) {
+                    this.currentCase = tableBasicFlagRed[i];
+                } else if (tableBasicFlagBlue[i].x === this.currentCase.x && tableBasicFlagBlue[i].y === this.currentCase.y) {
+                    this.currentCase = tableBasicFlagBlue[i];
+                }
+            }
+
         }
     },
 
@@ -226,9 +235,9 @@ var Robot = {
     //Repousser le robot adverse
     repulse: function (opposingRobot) {
         if (opposingRobot.color = "red") {
-            opposingRobot.currentCase.position.x -= 1;
+            opposingRobot.currentCase.x -= 1;
         } else {
-            opposingRobot.currentCase.position.x += 1;
+            opposingRobot.currentCase.x += 1;
         }
     },
 
@@ -244,11 +253,10 @@ var Robot = {
                 this.currentCase.x -= 1;
                 break;
             case 'NORTH':
-                this.currentCase.y += 1;
-                console.log("Franck");
+                this.currentCase.y -= 1;
                 break;
             case 'SOUTH':
-                this.currentCase.y -= 1;
+                this.currentCase.y += 1;
                 break;
         }
     }
@@ -256,15 +264,6 @@ var Robot = {
 
 }
 
-
-var Flag = {
-    constructor: function (color, currentCase) {
-        this.color = color;
-        this.currentCase = currentCase;
-        this.isTaken = false;
-
-    }
-}
 
 
 
@@ -316,35 +315,115 @@ function displayGrid() {
             } else if (blueRobot.currentCase.x === j && blueRobot.currentCase.y === i) {
                 grid += '<div class="robot"><div class="wheel"></div><div class="blueRobot"></div></div>';
                 plateau.grid[i][j] = new Case(new Position(i, j), true);
-            } else {
-                for (var p = 0; p < 4; p++) {
-                    if (tableBasicFlagRed[p].x === j && tableBasicFlagRed[p].y === i) {
-                        grid += '<img src="../images/flag-red.png" alt="flag-red">';
-                        plateau.grid[i][j] = new Case(new Position(i, j), false, "red", true);
-
-
-                    } else if (tableBasicFlagBlue[p].x === j && tableBasicFlagBlue[p].y === i) {
-                        grid += '<img src="../images/flag-blue.png" alt="flag-blue">';
-                        plateau.grid[i][j] = new Case(new Position(i, j), false, "blue", true);
-                    }
-                }
             }
 
-            grid += '</td>';
+            for (var p = 0; p < 4; p++) {
+                if (tableBasicFlagRed[p].x === j && tableBasicFlagRed[p].y === i) {
+                    if (redRobot.currentCase.x === j && redRobot.currentCase.y === i) {
+                        plateau.grid[i][j] = new Case(new Position(j, i), true, "red", true);
+                    } else {
+                        grid += '<img src="../images/flag-red.png" alt="flag-red">';
+                        plateau.grid[i][j] = new Case(new Position(j, i), false, "red", true);
+                        
+                    }
 
-            if (j === 8) {
-                grid += '</tr>';
+                } else if (tableBasicFlagBlue[p].x === j && tableBasicFlagBlue[p].y === i) {
+                    grid += '<img src="../images/flag-blue.png" alt="flag-blue">';
+                    plateau.grid[i][j] = new Case(new Position(i, j), false, "blue", true);
+                }
             }
         }
 
+        grid += '</td>';
+
+        if (j === 8) {
+            grid += '</tr>';
+        }
     }
+
+
     document.querySelector("table").innerHTML = grid;
 
-    console.log(plateau.grid);
-
+    console.log("franck");
 }
 
-redRobot.twiceAdvance();
-redRobot.advance('EAST');
-redRobot.takeFlag();
-redRobot.advance('NORTH');
+
+
+function playGame() {
+
+
+    if (indice < 5) {
+        console.log(redActionsSelected[indice]);
+        console.log(blueActionsSelected[indice]);
+        if (redActionsSelected[indice] !== "annuler-rouge" && blueActionsSelected[indice] !== 'annuler-bleu') {
+            actionRed(redActionsSelected[indice]);
+            actionBlue(blueActionsSelected[indice]);
+        }
+
+        displayGrid();
+        indice++;
+
+        setTimeout(playGame, 1000);
+    }
+    console.log(indice);
+}
+
+
+function actionRed(action) {
+    switch (action) {
+        case 'sud-rouge':
+            redRobot.advance('SOUTH');
+            break;
+        case 'est-rouge':
+            redRobot.advance('EAST');
+            break;
+        case 'ouest-rouge':
+            redRobot.advance('WEST');
+            break;
+        case 'nord-rouge':
+            redRobot.advance('NORTH');
+            break;
+        case 'est-x2-rouge':
+            redRobot.twiceAdvance();
+            break;
+        case 'prendre-rouge':
+            redRobot.takeFlag(plateau);
+            break;
+        case 'deposer-rouge':
+            redRobot.dropFlag();
+            break;
+        case 'repousser-rouge':
+            redRobot.repulse(blueRobot);
+            break;
+    }
+}
+
+
+function actionBlue(action) {
+    switch (action) {
+        case 'sud-bleu':
+            blueRobot.advance('SOUTH');
+            break;
+        case 'est-bleu':
+            blueRobot.advance('EAST');
+            break;
+        case 'ouest-bleu':
+            blueRobot.advance('WEST');
+            break;
+        case 'nord-bleu':
+            blueRobot.advance('NORTH');
+            break;
+        case 'ouest-x2-bleu':
+            blueRobot.twiceAdvance();
+            break;
+        case 'prendre-bleu':
+            blueRobot.takeFlag();
+            break;
+        case 'deposer-bleu':
+            blueRobot.dropFlag();
+            break;
+        case 'repousser-bleu':
+            blueRobot.repulse(redRobot);
+            break;
+    }
+}
