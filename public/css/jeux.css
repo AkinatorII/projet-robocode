@@ -1,0 +1,245 @@
+table {
+
+    background-color: lightgrey;
+    border-collapse: collapse;
+    margin: auto;
+    border: medium solid black;
+    margin: 20px;
+    width: 540px;
+}
+
+td {
+    text-align: center;
+    border: 1px solid black;
+    height: 60px;
+    width: 60px;
+    border: thin solid black;
+    position: relative;
+}
+
+caption {
+    text-align: center;
+    border-radius: 10px;
+    background-image: linear-gradient(to right, #0A80F2, #BF6BFF, #FF7F5F);
+    color: white;
+    margin-bottom: 7px;
+    font-size: 17px;
+    font-weight: bolder;
+}
+
+.actionsPlayerRed,
+.actionsPlayerBlue {
+    width: 110px;
+    height: 550px;
+    border-radius: 10px;
+    margin-top: 60px;
+    text-align: center;
+}
+
+.actionsPlayerRed {
+    background-color: #FFBFB5;
+    border: 2px solid red;
+}
+
+.actionsPlayerBlue {
+    background-color: #ABF7FF;
+    border: 2px solid blue;
+}
+
+
+
+.actionsPlayerRed img,
+.actionsPlayerBlue img {
+    width: 65px;
+    margin: 11px;
+}
+input[type="checkbox"]{
+    display: none;
+}
+table img {
+    width: 70%;
+
+}
+
+.jeu > *,
+caption {
+    box-shadow: 10px 10px 5px grey;
+    padding: 5px;
+}
+
+.greenCas {
+    background-color: palegreen;
+}
+
+.redCas {
+    background-color: #EEB5C5;
+}
+
+.blueCas {
+    background-color: #AEB3ED;
+}
+
+/*center le boc */
+
+.jeu {
+    display: flex;
+    margin: auto;
+    width: 800px;
+    position: relative;
+
+}
+
+
+
+.robot {
+    position: relative;
+    height: 85%;
+    width: 85%;
+    margin: auto;
+}
+
+.redRobot {
+    background-image: url(../images/robot-corps-rouge.png);
+}
+
+
+.blueRobot {
+    background-image: url(../images/robot-corps-bleu.png);
+    transform: rotate(180deg);
+}
+
+.redRobot,
+.blueRobot {
+    position: absolute;
+    height: 55%;
+    width: 100%;
+    top: 20%;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.wheel {
+    position: absolute;
+    height: 100%;
+    width: 65%;
+    left: 17%;
+    background-image: url(../images/robot-chenilles.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+
+.boutons {
+    width: 800px;
+    margin: 10px auto;
+    display: flex;
+    position: relative;
+    
+
+}
+
+.boutons > *,
+#valider {
+    width: 15%;
+    padding: 5px;
+    margin: auto;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bolder;
+}
+
+#redActions {
+
+    border: 2px solid red;
+    background-color: #EEB5C5;
+    color: red;
+}
+
+#play {
+
+    border: 2px solid #E1A4FF;
+    background-color: #EEB5C5;
+    background-image: linear-gradient(to right, #0A80F2, #BF6BFF, #FF7F5F);
+    color: whitesmoke;
+    cursor: not-allowed;
+}
+
+#blueActions {
+    border: 2px solid blue;
+    background-color: #AEB3ED;
+    color: blue;
+    cursor: not-allowed;
+}
+
+#blocActions {
+    font-family: sans-serif;
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    
+    background-color: lightgray;
+    border-radius: 10px;
+    border: solid 3px #000;
+    width: 60%;
+    height: 65%;
+    text-align: center;
+    font-weight:900;
+    display: none;
+}
+
+#blocActions > label{
+    display: inline;
+    
+}
+#blocActions label img {
+    width: 15%;
+    margin:3% 5% 3% 5%;
+}
+
+
+#valider {
+    border: 2px solid #E1A4FF;
+    background-color: aquamarine;
+    color: #B92EFD;
+    width: 30%;
+    cursor: pointer;
+}
+
+#blocActions #fermer {
+    position: absolute; 
+    right: 0px;
+    top: 0px;
+    width: 30px;
+    height: 30px;
+    font-size: 150%;
+    cursor: pointer;
+}
+#blocActions h3{
+    font-weight: 900;
+}
+@media (max-width: 765px) {
+
+    table {
+        width: 450px;
+    }
+    td {
+        height: 50px;
+        width: 50px;
+    }
+    .actionsPlayerRed,
+    .actionsPlayerBlue {
+        width: 90px;
+        height: 460px;
+    }
+    .actionsPlayerRed img,
+    .actionsPlayerBlue img {
+        width: 50px;
+
+    }
+    .jeu,
+    .boutons {
+        width: 670px;
+        font-size: 85%;
+    }
+
+}

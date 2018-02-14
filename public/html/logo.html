@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edition de votre logo</title>
+    <link href="../css/logo.css" rel="stylesheet">
+    <script src="../js/logo.js"></script>
+</head>
+
+<body>
+
+    <div id="content">
+        <canvas id="dessin" width="500" height="500"></canvas>
+        <canvas id="overlay" width="500" height="500"></canvas>
+        <div id="toolbox">
+            <input type="radio" name="radCommande" id="tracer" checked> <label for="tracer"></label>
+            <input type="radio" name="radCommande" id="gommer"> <label for="gommer"></label>
+            <input type="radio" name="radCommande" id="ligne"> <label for="ligne"></label>
+            <input type="radio" name="radCommande" id="rectangle"> <label for="rectangle"></label>
+            <input type="range" id="size" min="1" max="50" value="5">
+            <div id="new"></div>
+            <div id="open"></div>
+            <div id="save"></div>
+        </div>
+        <div id="modal">
+        </div>
+    </div>
+
+
+
+
+</body>
+
+</html>

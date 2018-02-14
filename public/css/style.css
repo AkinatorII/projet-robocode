@@ -1,0 +1,255 @@
+#cbInit, #cbTour, #cbFin {
+    position: absolute;
+    visibility: hidden;
+    /** ou plus simplement --> display: none; */
+}
+
+/** Form hack pour les zones expliquant les règles du jeu */        
+input[type=checkbox] + h4 label  {
+    margin-left: 15px;
+    cursor: pointer;
+    position: relative;
+}
+input[type=checkbox] + h4 label::before {
+    content: '\25B8\20';
+    transition: transform 0.3s linear 0s;
+    transform: rotate(0deg);
+    display: block;
+    position: absolute;
+    width: 10px;
+    left: -20px;
+}       
+input[type=checkbox]:checked + h4 label::before {
+    transform-origin: center center;
+    transform: rotate(90deg);
+}
+/** Pour animer l'affichage de la zone montrant  */
+input[type=checkbox] + h4 + div {
+    overflow: hidden;
+    transition: max-height 0.3s linear 0s;
+    max-height: 0;
+}
+input[type=checkbox]:checked + h4 + div {
+    max-height: 200px;
+}
+  
+        
+/*** ANIMATION DU ROBOT ***/        
+
+/** cacher les robots lorsque l'affichage est réduit */        
+@media all and (max-width: 765px) {
+    .robotzone { display: none; } 
+    main {
+        margin-top: 130px;
+    }
+}
+        
+
+@keyframes robotAnimation {
+    0% {
+        left: 0px;
+        transform: rotate(0deg);    
+    }
+    40% {
+        left: calc(100% - 100px);   
+        transform: rotate(0deg);    
+    }
+    50% {
+        transform: rotate(180deg);    
+        left: calc(100% - 100px);   
+    }
+    90% {
+        left: 0px;
+        transform: rotate(180deg);    
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+/* corps du robot 
+
+    <div class="robotzone">
+            <div class="robot" style="animation-delay: -10s;">
+                <div class="wheel"></div>
+                <div class="wheel"></div>
+                <div class="body red"></div>
+            </div>
+        </div>
+*/ 
+
+/** zone où le robot évolue */
+.robotzone {
+    position: relative;
+    height: calc(82px * 100 / 148);
+    margin: 40px auto;
+}
+/* block contenant le robot */
+.robot {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    transform: rotate(0deg);
+    transform-origin: center center;
+    width: 100px;
+    height: calc(82px * 100 / 148);
+    animation-name: robotAnimation;
+    animation-duration: 20s;
+    animation-direction: normal;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.robot .body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-size: cover;
+    display: block;
+    width: 100px;
+    height: calc(82px * 100 / 148);
+    z-index: 1;
+}
+.robot .body.red {
+    background-image: url(images/robot-corps-rouge.png);  
+}
+.robot .body.blue {
+    background-image: url(images/robot-corps-bleu.png);  
+}
+/* chacune des roues */
+.robot .wheel {
+    position: absolute;
+    left: 20px;
+    width: 60px;
+    height: calc(60px / 107 * 54);
+    z-index: 0;
+    background-image: url(images/robot-chenilles.png);
+    background-size: cover;
+}
+.robot .wheel:nth-child(1) {
+    top: -20px;
+    background-position: 0 0;
+    animation-name: wheelAnimation;
+    animation-direction: normal;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: steps(1, start);
+}
+.robot .wheel:nth-child(2) { 
+    bottom: -20px;
+    background-position: 0 0;
+    animation-name: wheelAnimation;
+    animation-direction: normal;
+    animation-duration: 0.7s;
+    animation-iteration-count: infinite;
+    animation-timing-function: steps(1, start);
+}
+@keyframes wheelAnimation {
+    0% {
+        background-position: 0px 0px;   
+    }
+    33% {
+        background-position: 0px -30px;   
+    }
+    66% {
+        background-position: 0px -61px;   
+    }
+    100% {
+        background-position: 0px 0px;   
+    }
+}
+ 
+/** Carousel pour faire défiler les images */        
+#myCarousel {
+    width: 518px;
+    margin: 20px auto;
+    overflow: hidden;
+}
+#myCarousel img {
+    width: 100%;
+    height: auto;
+}        
+@media screen and (max-width: 518px) {
+    #myCarousel {
+        width: 100% !important;   
+    }
+}
+ 
+/* petit hack pour éviter que le bandeau du menu ne cache le texte repéré par l'ancre (bon à savoir) */        
+h3[id] {
+    margin-top: -60px;
+    padding-top: 60px;
+}
+
+/** placement des images des actions dans la zone prévue à cet effet 
+    (marge interne à gauche du bloc + 
+        décalage de la seconde image derrière la première)    
+    */        
+.action {
+    padding-left: 100px;
+    min-height: 80px;
+}
+.action img {
+    position: absolute;
+    top: 0; 
+    left: 10px;
+    width: 60px;
+    height: 60px;
+    transform: rotate(-5deg);
+}
+.action img:nth-of-type(2) {
+    top: 10px;
+    left: 30px;
+    transform: none;
+}
+        
+        
+footer {
+    position: absolute;
+    background-color: #F0F0F0;
+    width: 100%;
+    padding: 15px 0;
+    margin-top: 20px;
+}
+        
+/** Blocs en bas de la page pour jouer en ligne ou en duo */        
+.myFlex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}              
+.myFlex > a {
+    color: inherit;
+    text-decoration: none;
+    width: 30%;
+    text-align: justify;
+    padding: 10px;
+}
+.myFlex .glyphicon {
+    font-size: 8vw;
+    display: block;
+    float: left;
+    height: 8vw;
+    margin-top: 10px;
+    margin-right: 10px;
+}        
+.myFlex a:hover .glyphicon {
+    color: blue;   
+}
+.myFlex a:first-child:hover .glyphicon {
+    color: red;   
+}
+@media screen and (max-width: 765px) {
+    .myFlex {
+        flex-direction: column;
+        align-content: flex-start;
+        align-items: flex-start;
+    }
+    .myFlex > a {
+        width: 100%;   
+    }     
+    
+    /* petit hack pour éviter que le bandeau du menu ne cache le texte repéré par l'ancre (bon à savoir) */        
+    h3[id] {
+        margin-top: -190px;
+        padding-top: 190px;
+    }
+}

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <title>Robocode | Le grand défi des robots</title>
+</head>
+
+
+<body data-spy="scroll" data-target=".navbar" data-offset="50">
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Robocode</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="#regles"><span class="glyphicon glyphicon-list-alt"></span> Règles du jeu</a></li>
+                <li><a href="#actions"><span class="glyphicon glyphicon-wrench"></span> Actions</a></li>
+                <li><a href="#jouer"><span class="glyphicon glyphicon-play"></span> Jouer</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <div class="jumbotron" style="margin-top: 60px;">
+
+            <img src="images/logo.png" alt="Logo de Robocode">
+
+            <h2>Le grand défi des robots</h2>
+
+            <p>Un jeu original pour 2 joueurs, sur mobile ou en ligne.</p>
+
+        </div>
+
+        <p>Robocode est un jeu dans lequel deux robots s'affrontent au tour par tour en aller chercher des drapeaux en vue de les poser dans la base adverse. Le premier robot à déposer deux drapeaux dans la base de l'adversaire gagne la partie. </p>
+
+        <!-- Carousel -->
+
+        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                <li data-target="#myCarousel" data-slide-to="1"></li>
+                <li data-target="#myCarousel" data-slide-to="2"></li>
+                <li data-target="#myCarousel" data-slide-to="3"></li>
+            </ol>
+
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner">
+                <div class="item active">
+                    <img src="images/carousel1.jpg" alt="Robocode - Plateau de jeu">
+                </div>
+                <div class="item">
+                    <img src="images/carousel2.png" alt="Robocode - Capture d'écran">
+                </div>
+                <div class="item">
+                    <img src="images/carousel3.png" alt="Robocode - Capture d'écran">
+                </div>
+                <div class="item">
+                    <img src="images/carousel4.png" alt="Robocode - Capture d'écran">
+                </div>
+            </div>
+
+        </div>
+
+        <h3 id="regles"><span class="glyphicon glyphicon-list-alt"></span> Règles du jeu</h3>
+
+        <p>Robocode est un jeu de réflexion qui se joue à deux joueurs, au tour par tour. Chaque joueur contrôle un robot qu'il programme avec un jeu d'instructions très simple que le robot exécutera à chaque tour de jeu. </p>
+
+        <input type="checkbox" id="cbInit">
+        <h4>
+            <label for="cbInit">
+            Disposition du plateau de jeu et configuration initiale
+        </label>
+        </h4>
+        <div>
+            <p>Le plateau de jeu est un carré de 9 &times; 9 cases. Les bases des robots sont disposés sur 4 cases aux extrémités ouest (robot bleu) et est (robot rouge). Les drapeaux à ramasser sont disposés sur les côtés nord et sud du damier.
+            </p>
+            <p>Initialement, chaque robot débute sur une case aléatoire de sa base, orienté dans la direction de la base adverse. Quatre drapeaux sont disposés dans la zone au nord et quatre au sud, mélangés aléatoirement dans ces zones (mais avec 2 drapeaux rouges et 2 bleus dans chaque zone).
+            </p>
+            <p>Le robot rouge a la main. C'est lui qui commenceera en premier l'exécution de son programme. </p>
+        </div>
+
+        <input type="checkbox" id="cbTour">
+        <h4>
+            <label for="cbTour">Tour de jeu</label>
+        </h4>
+        <div>
+            <p>Au début du tour, chaque joueur choisit 5 cartes "code" qui vont composer les 5 instructions du programme qui sera exécuté par son robot. Quand les deux joueurs ont écrit et validé leur programme, ceux-ci sont exécutés. </p>
+            <p>Les robots suivent leurs instructions une par une, à tour de rôle : le premier robot exécute sa première instruction, puis le second robot exécute sa première instruction, ensuite c'est au premier robot d'exécuter sa deuxième instruction, puis au second, et ainsi de suite, jusqu'à ce que les 5 instructions aient été exécutées. A la fin de chaque programme (série de 5 instructions), les joueurs sont invités à écrire leur prochain programme, et la main passe à l'autre robot qui exécutera ses instructions en premier. </p>
+            <p>Si une action est impossible à réaliser, le robot ne bouge pas jusqu'à l'instruction suivante. Un robot ne peut pas aller sur une case déjà occupée par l'autre robot, ni sortir du plateau. Les robots ne portent qu'un seul drapeau à la fois. </p>
+        </div>
+
+        <input type="checkbox" id="cbFin">
+        <h4>
+            <label for="cbFin">Fin de la partie</label>
+        </h4>
+        <div>
+            <p>La partie se termine lorsque l'un des deux joueurs a réussi à poser deux drapeaux dans sur la base adverse. </p>
+            <p>Le perdant hérite d'un gage. </p>
+        </div>
+
+        <div class="robotzone">
+            <div class="robot">
+                <div class="wheel"></div>
+                <div class="wheel"></div>
+                <div class="body blue"></div>
+            </div>
+        </div>
+
+        <h3 id="actions"><span class="glyphicon glyphicon-wrench"></span> Les actions/instructions possibles</h3>
+
+        <div class="row">
+            <div class="col-sm-6 action">
+                <img src="images/nord-bleu.png" alt="Tuile Nord Bleu">
+                <img src="images/nord-rouge.png" alt="Tuile Nord Rouge">
+                <h4>Nord, Sud, Est, Ouest</h4>
+                <p>Le robot se tourne dans la direction indiquée et avance d'une case. Il n'est pas possible d'avancer sur une case déjà occupée par l'autre robot. </p>
+            </div>
+
+            <div class="col-sm-6 action">
+                <img src="images/est-x2-rouge.png" alt="Tuile Est x2 Rouge">
+                <img src="images/ouest-x2-bleu.png" alt="Tuile Ouest x2 Bleu">
+                <h4>Est &times;2 - Ouest &times;2</h4>
+                <p>Le robot avance de deux cases dans vers l'ouest (robot bleu) ou vers l'est (robot rouge).</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 action">
+                <img src="images/prendre-rouge.png" alt="Tuile Prendre Rouge">
+                <img src="images/prendre-bleu.png" alt="Tuile Prendre Bleu">
+                <h4>Prendre</h4>
+                <p>Le robot prend le drapeau qui est sur la case où il se trouve. Le robot ne peut prendre qu'un drapeau à la fois. </p>
+            </div>
+            <div class="col-sm-6 action">
+                <img src="images/deposer-bleu.png" alt="Tuile Deposer Bleu">
+                <img src="images/deposer-rouge.png" alt="Tuile Deposer Rouge">
+                <h4>Déposer</h4>
+                <p>Le robot dépose le drapeau qu'il porte sur la case où il se trouve. Il ne peut y avoir qu'un seul drapeau par case. </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 action">
+                <img src="images/repousser-bleu.png" alt="Tuile Repousser Bleu">
+                <img src="images/repousser-rouge.png" alt="Tuile Repousser Rouge">
+                <h4>Repousser</h4>
+                <p>Le robot adverse recule d'une case dans la direction de sa base (vers l'est pour le bleu, vers l'ouest pour le rouge)</p>
+            </div>
+            <div class="col-sm-6 action">
+                <img src="images/annuler-rouge.png" alt="Tuile Annuler Rouge">
+                <img src="images/annuler-bleu.png" alt="Tuile Annuler Bleu">
+                <h4>Annuler</h4>
+                <p>L'action que le robot adverse doit faire à ce tour est annulée, même si celui-ci joue en premier. En conséquence, le robot ne fait rien. </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 action">
+                <img src="images/x2-rouge.png" alt="Tuile x2 Rouge">
+                <img src="images/x2-bleu.png" alt="Tuile x2 Bleu">
+                <h4>&times;2</h4>
+                <p>Répète l'action indiquée sur la carte précédente. </p>
+            </div>
+            <div class="col-sm-6 action">
+                <img src="images/pause-bleu.png" alt="Tuile Pause Bleu">
+                <img src="images/pause-rouge.png" alt="Tuile Pause Rouge">
+                <h4>Pause</h4>
+                <p>Le robot ne fait rien. </p>
+            </div>
+        </div>
+
+        <div class="robotzone">
+            <div class="robot" style="animation-delay: -10s;">
+                <div class="wheel"></div>
+                <div class="wheel"></div>
+                <div class="body red"></div>
+            </div>
+        </div>
+
+
+        <h3 id="jouer"><span class="glyphicon glyphicon-play"></span> Prêt ? C'est parti !</h3>
+
+        <p>Pour jouer, saisissez les instructions composant votre programme et validez celui-ci. Dès que les deux joueurs ont validé leurs instructions, vous pouvez faire exécuter le programme aux robots.
+        </p>
+
+        <p>Faites votre choix : </p>
+
+        <div class="myFlex">
+
+            <a href="./html/jeuDuo.html">
+        <span class="glyphicon glyphicon-phone"></span>
+        Jouer à deux sur un même écran avec un mobile (téléphone, tablette). 
+        A tour de rôles, chaque joueur prendra l'appareil pour écrire son programme, 
+        en se cachant de l'autre joueur. 
+    </a>
+
+            <a href="./html/chat.html">
+        <span class="glyphicon glyphicon-globe"></span>
+        Jouer en ligne, contre un autre joueur connecté au même moment. 
+        Connectez-vous au chat pour discuter avec les joueurs présents, et créer ou rejoindre une partie.  
+    </a>
+
+        </div>
+    </main>
+
+    <footer class="text-center text-muted">
+        &copy; Astrapi (jeu proposé dans le N°875 - Fév. 2017) - Licence Informatique de l'Université de Franche-Comté
+    </footer>
+
+</body>
+    
+
+
+</html>
