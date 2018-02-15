@@ -7,6 +7,10 @@ var indice = 0;
 var tmp;
 
 
+var tableBasicFlagCaseRed = [new Position(3, 0), new Position(5, 0), new Position(4, 7), new Position(4, 8)];
+
+var tableBasicFlagCaseBlue = [new Position(3, 8), new Position(5, 8), new Position(4, 0), new Position(4, 1)];
+
 var tableBasicFlagRed = [new Position(3, 0), new Position(5, 0), new Position(4, 7), new Position(4, 8)];
 
 var tableBasicFlagBlue = [new Position(3, 8), new Position(5, 8), new Position(4, 0), new Position(4, 1)];
@@ -16,6 +20,7 @@ var basicPositionTableRed = [new Position(0, 3), new Position(0, 4), new Positio
 var basicPositionTableBlue = [new Position(8, 3), new Position(8, 4), new Position(8, 5), new Position(7, 4)];
 
 document.addEventListener("DOMContentLoaded", function () {
+    generatePlateau();
     displayGrid();
     document.getElementById("redActions").addEventListener("click", function () {
         var blocActions = document.getElementById("blocActions");
@@ -157,19 +162,20 @@ function Plateau() {
 
 
 
-function Case(position, isOccupedByRobot = false, colorFlag = "", isOccupedByFlag = false) {
+function Case(position, isOccupedByRobot = "", colorCase = "", colorFlag = "", isOccupedByFlag = false, ) {
     //?Peut-etre rajouté un attribut drapeau?// 
     this.position = position // Position de la case
     this.isOccupedByRobot = isOccupedByRobot; //Si la case est occupé ou non
     this.isOccupedByFlag = isOccupedByFlag; // -1 sinon, 0 si rouge et 1 si bleu
     this.colorFlag = colorFlag;
+    this.colorCase = colorCase;
 }
 
 
 var Robot = {
     constructor: function (color) {
         this.color = color;
-
+        this.hasFlag = "";
 
         if (color === "red") {
             this.currentDirection = 'EAST';
@@ -188,12 +194,13 @@ var Robot = {
 
 
     //Avancer deux fois;
-    twiceAdvance: function () {
-        console.log("jerome");
+    twiceAdvance: function (plateau) {
         if (this.color === "red") {
             if (this.currentCase.x + 2 > 8) {
                 alert('Votre robot ne peut pas sortir du plateau de jeu');
             } else {
+                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
+                plateau.grid[this.currentCase.y][this.currentCase.x + 2].isOccupedByRobot = this.color;
                 this.currentCase.x += 2;
                 //this.currentCase.isOccuped = false;
             }
@@ -202,6 +209,8 @@ var Robot = {
             if (this.currentCase.x - 2 < 0) {
                 alert('Votre robot ne peut pas sortir du plateau de jeu');
             } else {
+                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
+                plateau.grid[this.currentCase.y][this.currentCase.x - 2].isOccupedByRobot = this.color;
                 this.currentCase.x -= 2;
             }
         }
@@ -209,53 +218,56 @@ var Robot = {
 
     //Prendre un drapeau
     takeFlag: function (plateau) {
-        console.log(this.currentCase.x, this.currentCase.y);
-        console.log(plateau.grid[this.currentCase.x][this.currentCase.y].isOccupedByFlag);
-        if (plateau.grid[this.currentCase.x][this.currentCase.y].isOccupedByFlag) {
-
-            for (var i = 0; i < 4; i++) {
-                if (tableBasicFlagRed[i].x === this.currentCase.x && tableBasicFlagRed[i].y === this.currentCase.y) {
-                    this.currentCase = tableBasicFlagRed[i];
-                } else if (tableBasicFlagBlue[i].x === this.currentCase.x && tableBasicFlagBlue[i].y === this.currentCase.y) {
-                    this.currentCase = tableBasicFlagBlue[i];
-                }
-            }
-
+        if (plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByFlag !== "") {
+            this.hasFlag = plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByFlag;
+            plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByFlag = false;
         }
     },
 
     //Déposer un drapeau
-    dropFlag: function (flag, currentCase) {
-        if (!currentCase.isOccuped) {
-            this.flag = "";
-            flag.currentCase = currentCase;
+    dropFlag: function (plateau) {
+
+        if (!plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByFlag) {
+            plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByFlag = this.hasFlag;
         }
     },
 
     //Repousser le robot adverse
-    repulse: function (opposingRobot) {
+    repulse: function (opposingRobot, plateau) {
         if (opposingRobot.color = "red") {
+            plateau.grid[opposingRobot.currentCase.y][opposingRobot.currentCase.x].isOccupedByRobot = "";
+            plateau.grid[opposingRobot.currentCase.y][opposingRobot.currentCase.x - 1].isOccupedByRobot = opposingRobot.color;
             opposingRobot.currentCase.x -= 1;
         } else {
+            plateau.grid[opposingRobot.currentCase.y][opposingRobot.currentCase.x].isOccupedByRobot = "";
+            plateau.grid[opposingRobot.currentCase.y][opposingRobot.currentCase.x + 1].isOccupedByRobot = opposingRobot.color;
             opposingRobot.currentCase.x += 1;
         }
     },
 
     //Tourner et avancer d'une case
-    advance: function (direction) {
+    advance: function (direction, plateau) {
         this.currentDirection = direction;
-
         switch (this.currentDirection) {
             case 'EAST':
+
+                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
+                plateau.grid[this.currentCase.y][this.currentCase.x + 1].isOccupedByRobot = this.color;
                 this.currentCase.x += 1;
                 break;
             case 'WEST':
+                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
+                plateau.grid[this.currentCase.y][this.currentCase.x - 1].isOccupedByRobot = this.color;
                 this.currentCase.x -= 1;
                 break;
             case 'NORTH':
+                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
+                plateau.grid[this.currentCase.y - 1][this.currentCase.x].isOccupedByRobot = this.color;
                 this.currentCase.y -= 1;
                 break;
             case 'SOUTH':
+                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
+                plateau.grid[this.currentCase.y + 1][this.currentCase.x].isOccupedByRobot = this.color;
                 this.currentCase.y += 1;
                 break;
         }
@@ -265,7 +277,7 @@ var Robot = {
 }
 
 
-
+var plateau = new Plateau();
 
 //Création des robots
 var redRobot = Object.create(Robot);
@@ -275,33 +287,28 @@ var blueRobot = Object.create(Robot);
 blueRobot.constructor("blue");
 
 
-var plateau = new Plateau();
+
 
 function displayGrid() {
     var grid = '<caption>Début de la partie</caption>';
     var nine = false;
 
-
+    console.log(plateau.grid);
     for (var i = 0; i < 9; i++) {
         grid += '<tr>';
 
         for (var j = 0; j < 9; j++) {
-
-
-
-            for (var k = 0; k < 4; k++) {
-                if (basicPositionTableRed[k].x === j && basicPositionTableRed[k].y === i) {
-                    grid += '<td class="redCas">';
-                    nine = true;
-                } else if (basicPositionTableBlue[k].x === j && basicPositionTableBlue[k].y === i) {
-                    grid += '<td class="blueCas">';
-                    nine = true;
-                } else if ((tableBasicFlagRed[k].x === j && tableBasicFlagRed[k].y === i) || (tableBasicFlagBlue[k].x === j && tableBasicFlagBlue[k].y === i)) {
-                    grid += '<td class="greenCas">';
-                    nine = true;
-                }
-                plateau.grid[i][j] = new Case(new Position(i, j));
+            if (plateau.grid[i][j].colorCase === "red") {
+                grid += '<td class="redCas">';
+                nine = true;
+            } else if (plateau.grid[i][j].colorCase === "blue") {
+                grid += '<td class="blueCas">';
+                nine = true;
+            } else if (plateau.grid[i][j].colorCase === "green") {
+                grid += '<td class="greenCas">';
+                nine = true;
             }
+
 
             if (!nine) {
                 grid += '<td>';
@@ -309,28 +316,21 @@ function displayGrid() {
             nine = false;
 
 
-            if (redRobot.currentCase.x === j && redRobot.currentCase.y === i) {
+            if (plateau.grid[i][j].isOccupedByRobot === "red") {
                 grid += '<div class="robot"> <div class = "wheel" ></div><div class = "redRobot" ></div></div>';
-                plateau.grid[i][j] = new Case(new Position(i, j), true);
-            } else if (blueRobot.currentCase.x === j && blueRobot.currentCase.y === i) {
+            } else if (plateau.grid[i][j].isOccupedByRobot === "blue") {
                 grid += '<div class="robot"><div class="wheel"></div><div class="blueRobot"></div></div>';
-                plateau.grid[i][j] = new Case(new Position(i, j), true);
             }
 
-            for (var p = 0; p < 4; p++) {
-                if (tableBasicFlagRed[p].x === j && tableBasicFlagRed[p].y === i) {
-                    if (redRobot.currentCase.x === j && redRobot.currentCase.y === i) {
-                        plateau.grid[i][j] = new Case(new Position(j, i), true, "red", true);
-                    } else {
-                        grid += '<img src="../images/flag-red.png" alt="flag-red">';
-                        plateau.grid[i][j] = new Case(new Position(j, i), false, "red", true);
-                        
-                    }
 
-                } else if (tableBasicFlagBlue[p].x === j && tableBasicFlagBlue[p].y === i) {
-                    grid += '<img src="../images/flag-blue.png" alt="flag-blue">';
-                    plateau.grid[i][j] = new Case(new Position(i, j), false, "blue", true);
-                }
+
+
+            if (plateau.grid[i][j].isOccupedByFlag === "red" && plateau.grid[i][j].isOccupedByRobot === "") {
+                grid += '<img src="../images/flag-red.png" alt="flag-red">';
+
+            } else if (plateau.grid[i][j].isOccupedByFlag === "blue" && plateau.grid[i][j].isOccupedByRobot === "") {
+                grid += '<img src="../images/flag-blue.png" alt="flag-blue">';
+
             }
         }
 
@@ -343,11 +343,48 @@ function displayGrid() {
 
 
     document.querySelector("table").innerHTML = grid;
-
-    console.log("franck");
 }
 
 
+function generatePlateau() {
+    for (var i = 0; i < 9; i++) {
+        for (var j = 0; j < 9; j++) {
+            plateau.grid[i][j] = new Case(new Position(i, j));
+            for (var k = 0; k < 4; k++) {
+                if (basicPositionTableRed[k].x === j && basicPositionTableRed[k].y === i) {
+                    plateau.grid[i][j].colorCase = "red";
+                } else if (basicPositionTableBlue[k].x === j && basicPositionTableBlue[k].y === i) {
+                    plateau.grid[i][j].colorCase = "blue";
+                } else if ((tableBasicFlagCaseRed[k].x === j && tableBasicFlagCaseRed[k].y === i) || (tableBasicFlagCaseBlue[k].x === j && tableBasicFlagCaseBlue[k].y === i)) {
+                    plateau.grid[i][j].colorCase = "green";
+                }
+            }
+
+            if (redRobot.currentCase.x === j && redRobot.currentCase.y === i) {
+                plateau.grid[i][j].isOccupedByRobot = "red";
+            } else if (blueRobot.currentCase.x === j && blueRobot.currentCase.y === i) {
+                plateau.grid[i][j].isOccupedByRobot = "blue";
+            }
+
+            for (var p = 0; p < 4; p++) {
+                if (tableBasicFlagCaseRed[p].x === j && tableBasicFlagCaseRed[p].y === i && redRobot.currentCase.x === j && redRobot.currentCase.y === i) {
+                    plateau.grid[i][j].isOccupedByRobot = "red";
+                    plateau.grid[i][j].isOccupedByFlag = "red";
+                } else if (tableBasicFlagCaseRed[p].x === j && tableBasicFlagCaseRed[p].y === i) {
+                    plateau.grid[i][j].isOccupedByFlag = "red";
+
+
+                } else if (tableBasicFlagCaseBlue[p].x === j && tableBasicFlagCaseBlue[p].y === i && redRobot.currentCase.x === j && redRobot.currentCase.y === i) {
+                    plateau.grid[i][j].isOccupedByRobot = "blue";
+                    plateau.grid[i][j].isOccupedByFlag = "blue";
+
+                } else if (tableBasicFlagCaseBlue[p].x === j && tableBasicFlagCaseBlue[p].y === i) {
+                    plateau.grid[i][j].isOccupedByFlag = "blue";
+                }
+            }
+        }
+    }
+}
 
 function playGame() {
 
@@ -359,7 +396,7 @@ function playGame() {
             actionRed(redActionsSelected[indice]);
             actionBlue(blueActionsSelected[indice]);
         }
-
+        //generatePlateau();
         displayGrid();
         indice++;
 
@@ -372,28 +409,28 @@ function playGame() {
 function actionRed(action) {
     switch (action) {
         case 'sud-rouge':
-            redRobot.advance('SOUTH');
+            redRobot.advance('SOUTH', plateau);
             break;
         case 'est-rouge':
-            redRobot.advance('EAST');
+            redRobot.advance('EAST', plateau);
             break;
         case 'ouest-rouge':
-            redRobot.advance('WEST');
+            redRobot.advance('WEST', plateau);
             break;
         case 'nord-rouge':
-            redRobot.advance('NORTH');
+            redRobot.advance('NORTH', plateau);
             break;
         case 'est-x2-rouge':
-            redRobot.twiceAdvance();
+            redRobot.twiceAdvance(plateau);
             break;
         case 'prendre-rouge':
             redRobot.takeFlag(plateau);
             break;
         case 'deposer-rouge':
-            redRobot.dropFlag();
+            redRobot.dropFlag(plateau);
             break;
         case 'repousser-rouge':
-            redRobot.repulse(blueRobot);
+            redRobot.repulse(blueRobot, plateau);
             break;
     }
 }
@@ -402,28 +439,28 @@ function actionRed(action) {
 function actionBlue(action) {
     switch (action) {
         case 'sud-bleu':
-            blueRobot.advance('SOUTH');
+            blueRobot.advance('SOUTH', plateau);
             break;
         case 'est-bleu':
-            blueRobot.advance('EAST');
+            blueRobot.advance('EAST', plateau);
             break;
         case 'ouest-bleu':
-            blueRobot.advance('WEST');
+            blueRobot.advance('WEST', plateau);
             break;
         case 'nord-bleu':
-            blueRobot.advance('NORTH');
+            blueRobot.advance('NORTH', plateau);
             break;
         case 'ouest-x2-bleu':
-            blueRobot.twiceAdvance();
+            blueRobot.twiceAdvance(plateau);
             break;
         case 'prendre-bleu':
-            blueRobot.takeFlag();
+            blueRobot.takeFlag(plateau);
             break;
         case 'deposer-bleu':
-            blueRobot.dropFlag();
+            blueRobot.dropFlag(plateau);
             break;
         case 'repousser-bleu':
-            blueRobot.repulse(redRobot);
+            blueRobot.repulse(redRobot, plateau);
             break;
     }
 }
