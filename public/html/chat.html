@@ -1,37 +1,40 @@
-<!DOCTYPE HTML>
 
-
+<!doctype html>
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scal=1" charset="UTF-8">
-    <title>chat</title>
+    <meta charset="UTF-8">
+    <title>Chat des joueurs de Robocode</title>
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/chat.css" rel="stylesheet">
     <script src="../js/chat.js"></script>
 </head>
 
 <body>
-
-    <input type="button" name="Envoyer requete" value="Ajouter utilisateur" onclick="addUser()">
-    <input type="button" name="Envoyer requete" value="Supprimer utilisateur" onclick="deleteUser()">
-    <input type="button" name="Envoyer requete" value="Envoyer un message" onclick="sendMessage()">
-    <div id="chat">
-        <div id="authentification">
-            <input id="login" type="text"> <br>
-            <input id="connexion" type="button" value="se connecter" onclick=addUser()>
-            <input type="button" value="Revenir à l'accueil">
-
+    <div id="logScreen" class="visible">
+        <div id="connexion">
+            <p>Choisissez votre pseudo : <br>
+                <input type="text" id="pseudo" value="" placeholder="Tapez ici votre pseudo" size="30">
+                <input type="hidden" id="key" value="">
+                <br>
+                <input type="button" value="Se connecter" onclick="connect()">
+                <input type="button" value="Retour à l'accueil" onclick="quitter()">
+            </p>
         </div>
     </div>
-
-
-
+    <div id="content">
+        <h2>Chat de Robocode - utilisateur : <span id="login"></span></h2>
+        <h3>Utilisateurs connectés</h3>
+        <aside>
+        </aside>
+        <main>
+        </main>
+        <footer>
+            <input type="text" id="monMessage">
+            <input type="button" value="Envoyer" onclick="envoyer()">
+            <input type="button" value="Retour à l'accueil" onclick="quitter()">
+        </footer>
+    </div>
 </body>
-
-
-
-
-
-
 
 </html>

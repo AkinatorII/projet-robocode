@@ -5,19 +5,16 @@ var redActionsSelected = ["", "", "", "", ""];
 var blueActionsSelected = ["", "", "", "", ""];
 var indice = 0;
 var tmp;
-
-
+var round = 0;
 var tableBasicFlagCaseRed = [new Position(3, 0), new Position(5, 0), new Position(4, 7), new Position(4, 8)];
 
 var tableBasicFlagCaseBlue = [new Position(3, 8), new Position(5, 8), new Position(4, 0), new Position(4, 1)];
 
-var tableBasicFlagRed = [new Position(3, 0), new Position(5, 0), new Position(4, 7), new Position(4, 8)];
-
-var tableBasicFlagBlue = [new Position(3, 8), new Position(5, 8), new Position(4, 0), new Position(4, 1)];
-
 var basicPositionTableRed = [new Position(0, 3), new Position(0, 4), new Position(0, 5), new Position(1, 4)];
 
 var basicPositionTableBlue = [new Position(8, 3), new Position(8, 4), new Position(8, 5), new Position(7, 4)];
+
+var plateau = new Plateau();
 
 document.addEventListener("DOMContentLoaded", function () {
     generatePlateau();
@@ -36,9 +33,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     displayDefaultAction("actionsPlayerRed", defaultActionsRed);
     displayDefaultAction("actionsPlayerBlue", defaultActionsBlue);
+    document.getElementById("play").addEventListener("click", function () {
 
-    document.getElementById("play").addEventListener("click", playGame);
+        blockButton("blueActions", "redActions", "play");
+        playGame(plateau);
 
+    });
 
 
 });
@@ -59,9 +59,9 @@ function displayDefaultAction(element, tabActions) {
 function displayRobotActions(blocActions, tabImg, element) {
     blocActions.innerHTML = '<h3> Les actions :</h3><div id="fermer" onclick="fermer(\'' + element + '\')">X</div>';
     for (var i = 0; i < tabImg.length; i++) {
-        blocActions.innerHTML += '<input type="checkbox" id="' + tabImg[i] + '" name="' + tabImg[i] + '"><label for="' + tabImg[i] + '" onclick="selectAction(this,\'' + element + '\')"><img src="../images/' + tabImg[i] + '.png" alt="' + tabImg[i] + '"></label>';
+        blocActions.innerHTML += '<input type="checkbox" id="' + tabImg[i] + '" name="' + tabImg[i] + '"><label id="label' + tabImg[i] + '" for="' + tabImg[i] + '" onclick="selectAction(this,\'' + element + '\')"><img src="../images/' + tabImg[i] + '.png" alt="' + tabImg[i] + '"></label>';
     }
-    blocActions.innerHTML += '<div id="valider" onclick="unblockButtons(\'' + element + '\');fermer(\'' + element + '\')">Valider</div>';
+    blocActions.innerHTML += '<div id="valider" onclick="valide(\'' + element + '\');">Valider</div>';
     blocActions.style.display = "block";
 }
 
@@ -76,32 +76,65 @@ function fermer(element) {
         }
 
     }
+
     indice = 0;
 }
 
-function unblockButtons(el) {
-    if (el == "actionsPlayerRed") {
-        var actionsBlue = document.getElementById("blueActions");
-        actionsBlue.style.cursor = "pointer";
-        actionsBlue.disabled = false;
-    } else if (el == "actionsPlayerBlue") {
-        var boutonJeu = document.getElementById("play");
-        boutonJeu.style.cursor = "pointer";
-        boutonJeu.disabled = false;
+function blockButton() {
+
+    var btn;
+    for (var i in arguments) {
+        btn = document.getElementById(arguments[i])
+        btn.disabled = true;
+        btn.style.cursor = "not-allowed";
     }
 
 }
 
+function unblockButton() {
+    var btn;
+    for (var i in arguments) {
+        btn = document.getElementById(arguments[i])
+        btn.disabled = false;
+        btn.style.cursor = "pointer";
+    }
+
+
+}
+
+
+function valide(element) {
+    if (indice > 4) {
+        if (element == "actionsPlayerRed") {
+            unblockButton("blueActions");
+            if (round % 2 != 0) {
+                unblockButton("play");
+            }
+        } else if (element == "actionsPlayerBlue") {
+            unblockButton("redActions");
+            if (round % 2 == 0) {
+                unblockButton("play");
+            }
+        }
+        fermer(element);
+    } else {
+        alert("il faut choisir 5 actions !!");
+    }
+
+
+}
 
 function selectAction(action, actionsRobot) {
     if (indice < 5) {
         var actionSelected = action.getAttribute("for");
-
+        action.style.display = "none";
         var player1 = document.querySelector('.' + actionsRobot);
 
         var action = player1.getElementsByTagName("label");
 
+        //document.querySelector("#");
         action[indice].children[0].src = "../images/" + actionSelected + ".png";
+        //action[indice].style.display="none";
 
         if (actionsRobot == "actionsPlayerRed") {
 
@@ -123,22 +156,33 @@ function selectAction(action, actionsRobot) {
 }
 
 function annulerAction(action, element) {
+    //regarder a la fin le truc d'input dans les deux bloc (player1_2 , blocAction)
     var numAction = action.getAttribute("for");
     tmp = indice;
-    if (indice => numAction && indice > 0) {
+
+    if (indice >= numAction && indice > 0) {
 
         var defaultAction;
+        var tabActionsSelected;
         if (element == "actionsPlayerRed") {
             defaultAction = defaultActionsRed;
+            tabActionsSelected = redActionsSelected;
         } else {
             defaultAction = defaultActionsBlue;
+            tabActionsSelected = blueActionsSelected;
         }
+
+        //action.style.display="none";
         action.querySelector("img").src = "../images/block-vide-" + defaultAction[numAction] + ".png";
         indice = numAction - 1;
+        document.querySelector("#label" + redActionsSelected[indice]).style.display = "inline";
+        tabActionsSelected[indice] = "";
+
     }
 
 }
 
+/*Fonction qui génère un entier entre deux bornes min et max*/
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -146,12 +190,13 @@ function getRandomIntInclusive(min, max) {
 };
 
 
-
+/*Objet Position*/
 function Position(x, y) {
     this.x = x;
     this.y = y;
 }
 
+/*Objet Plateau*/
 function Plateau() {
     this.grid = new Array();
 
@@ -161,17 +206,19 @@ function Plateau() {
 }
 
 
-
-function Case(position, isOccupedByRobot = "", colorCase = "", colorFlag = "", isOccupedByFlag = false, ) {
+/*Objet Case */
+function Case(position) {
     //?Peut-etre rajouté un attribut drapeau?// 
     this.position = position // Position de la case
-    this.isOccupedByRobot = isOccupedByRobot; //Si la case est occupé ou non
-    this.isOccupedByFlag = isOccupedByFlag; // -1 sinon, 0 si rouge et 1 si bleu
-    this.colorFlag = colorFlag;
-    this.colorCase = colorCase;
+    this.isOccupedByRobot = ""; //Si la case est occupé ou non
+    this.isOccupedByFlag = ""; // -1 sinon, 0 si rouge et 1 si bleu
+    this.colorFlag = "";
+    this.colorCase = "";
+
 }
 
 
+/*Objet Robot*/
 var Robot = {
     constructor: function (color) {
         this.color = color;
@@ -180,12 +227,12 @@ var Robot = {
         if (color === "red") {
             this.currentDirection = 'EAST';
             var tmp = basicPositionTableRed[getRandomIntInclusive(0, 3)];
-            this.currentCase = new Position(4, 7);
+            this.currentCase = new Position(tmp.x,tmp.y);
             this.currentCase.isOccupedByRobot = true;
         } else if (color === "blue") {
             this.currentDirection = 'WEST';
             var tmp = basicPositionTableBlue[getRandomIntInclusive(0, 3)]
-            this.currentCase = new Position(tmp.x, tmp.y);
+            this.currentCase = new Position(tmp.x,tmp.y);
             this.currentCase.isOccupedByRobot = true;
 
         }
@@ -196,23 +243,13 @@ var Robot = {
     //Avancer deux fois;
     twiceAdvance: function (plateau) {
         if (this.color === "red") {
-            if (this.currentCase.x + 2 > 8) {
-                alert('Votre robot ne peut pas sortir du plateau de jeu');
-            } else {
-                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
-                plateau.grid[this.currentCase.y][this.currentCase.x + 2].isOccupedByRobot = this.color;
-                this.currentCase.x += 2;
-                //this.currentCase.isOccuped = false;
-            }
+
+            this.advance("EAST", plateau);
+            this.advance("EAST", plateau);
         } else if (this.color === "blue") {
-            console.log("Ayme");
-            if (this.currentCase.x - 2 < 0) {
-                alert('Votre robot ne peut pas sortir du plateau de jeu');
-            } else {
-                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
-                plateau.grid[this.currentCase.y][this.currentCase.x - 2].isOccupedByRobot = this.color;
-                this.currentCase.x -= 2;
-            }
+
+            this.advance("WEST", plateau);
+            this.advance("WEST", plateau);
         }
     },
 
@@ -234,12 +271,11 @@ var Robot = {
 
     //Repousser le robot adverse
     repulse: function (opposingRobot, plateau) {
-        if (opposingRobot.color = "red") {
-            plateau.grid[opposingRobot.currentCase.y][opposingRobot.currentCase.x].isOccupedByRobot = "";
+        plateau.grid[opposingRobot.currentCase.y][opposingRobot.currentCase.x].isOccupedByRobot = "";
+        if (opposingRobot.color === "red") {
             plateau.grid[opposingRobot.currentCase.y][opposingRobot.currentCase.x - 1].isOccupedByRobot = opposingRobot.color;
             opposingRobot.currentCase.x -= 1;
         } else {
-            plateau.grid[opposingRobot.currentCase.y][opposingRobot.currentCase.x].isOccupedByRobot = "";
             plateau.grid[opposingRobot.currentCase.y][opposingRobot.currentCase.x + 1].isOccupedByRobot = opposingRobot.color;
             opposingRobot.currentCase.x += 1;
         }
@@ -251,33 +287,62 @@ var Robot = {
         switch (this.currentDirection) {
             case 'EAST':
 
-                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
-                plateau.grid[this.currentCase.y][this.currentCase.x + 1].isOccupedByRobot = this.color;
-                this.currentCase.x += 1;
+
+                if (!this.testError(plateau, this.currentCase.x + 1, this.currentCase.y)) {
+                    plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
+                    plateau.grid[this.currentCase.y][this.currentCase.x + 1].isOccupedByRobot = this.color;
+                    this.currentCase.x += 1;
+                }
+
                 break;
             case 'WEST':
-                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
-                plateau.grid[this.currentCase.y][this.currentCase.x - 1].isOccupedByRobot = this.color;
-                this.currentCase.x -= 1;
+
+                if (!this.testError(plateau, this.currentCase.x - 1, this.currentCase.y)) {
+                    plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
+                    plateau.grid[this.currentCase.y][this.currentCase.x - 1].isOccupedByRobot = this.color;
+                    this.currentCase.x -= 1;
+                }
+
                 break;
             case 'NORTH':
-                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
-                plateau.grid[this.currentCase.y - 1][this.currentCase.x].isOccupedByRobot = this.color;
-                this.currentCase.y -= 1;
+
+                if (!this.testError(plateau, this.currentCase.x, this.currentCase.y - 1)) {
+                    plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
+                    plateau.grid[this.currentCase.y - 1][this.currentCase.x].isOccupedByRobot = this.color;
+                    this.currentCase.y -= 1;
+                }
+
                 break;
             case 'SOUTH':
-                plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
-                plateau.grid[this.currentCase.y + 1][this.currentCase.x].isOccupedByRobot = this.color;
-                this.currentCase.y += 1;
+
+                if (!this.testError(plateau, this.currentCase.x, this.currentCase.y + 1)) {
+                    plateau.grid[this.currentCase.y][this.currentCase.x].isOccupedByRobot = "";
+                    plateau.grid[this.currentCase.y + 1][this.currentCase.x].isOccupedByRobot = this.color;
+                    this.currentCase.y += 1;
+                }
+
                 break;
         }
-    }
+    },
 
+
+    testError: function (plateau, x, y) {
+
+        if (x > 8 || y > 8 || x < 0 || y < 0) {
+            alert('Votre robot ne peut pas sortir du plateau de jeu');
+            return true;
+
+        } else if (plateau.grid[y][x].isOccupedByRobot != "") {
+            alert('Votre adverssaire est deja dans la case ');
+            return true;
+        }
+        return false;
+    }
 
 }
 
 
-var plateau = new Plateau();
+
 
 //Création des robots
 var redRobot = Object.create(Robot);
@@ -288,12 +353,11 @@ blueRobot.constructor("blue");
 
 
 
-
+/* Fonction qui sert à afficher la grille avec les robots et les drapeaux*/
 function displayGrid() {
     var grid = '<caption>Début de la partie</caption>';
     var nine = false;
 
-    console.log(plateau.grid);
     for (var i = 0; i < 9; i++) {
         grid += '<tr>';
 
@@ -325,10 +389,10 @@ function displayGrid() {
 
 
 
-            if (plateau.grid[i][j].isOccupedByFlag === "red" && plateau.grid[i][j].isOccupedByRobot === "") {
+            if (plateau.grid[i][j].isOccupedByFlag === "red") {
                 grid += '<img src="../images/flag-red.png" alt="flag-red">';
 
-            } else if (plateau.grid[i][j].isOccupedByFlag === "blue" && plateau.grid[i][j].isOccupedByRobot === "") {
+            } else if (plateau.grid[i][j].isOccupedByFlag === "blue") {
                 grid += '<img src="../images/flag-blue.png" alt="flag-blue">';
 
             }
@@ -345,7 +409,7 @@ function displayGrid() {
     document.querySelector("table").innerHTML = grid;
 }
 
-
+/* Fonction qui genere le plateau de jeu */
 function generatePlateau() {
     for (var i = 0; i < 9; i++) {
         for (var j = 0; j < 9; j++) {
@@ -358,6 +422,21 @@ function generatePlateau() {
                 } else if ((tableBasicFlagCaseRed[k].x === j && tableBasicFlagCaseRed[k].y === i) || (tableBasicFlagCaseBlue[k].x === j && tableBasicFlagCaseBlue[k].y === i)) {
                     plateau.grid[i][j].colorCase = "green";
                 }
+
+                if (tableBasicFlagCaseRed[k].x === j && tableBasicFlagCaseRed[k].y === i && redRobot.currentCase.x === j && redRobot.currentCase.y === i) {
+                    plateau.grid[i][j].isOccupedByRobot = "red";
+                    plateau.grid[i][j].isOccupedByFlag = "red";
+                } else if (tableBasicFlagCaseRed[k].x === j && tableBasicFlagCaseRed[k].y === i) {
+                    plateau.grid[i][j].isOccupedByFlag = "red";
+
+
+                } else if (tableBasicFlagCaseBlue[k].x === j && tableBasicFlagCaseBlue[k].y === i && redRobot.currentCase.x === j && redRobot.currentCase.y === i) {
+                    plateau.grid[i][j].isOccupedByRobot = "blue";
+                    plateau.grid[i][j].isOccupedByFlag = "blue";
+
+                } else if (tableBasicFlagCaseBlue[k].x === j && tableBasicFlagCaseBlue[k].y === i) {
+                    plateau.grid[i][j].isOccupedByFlag = "blue";
+                }
             }
 
             if (redRobot.currentCase.x === j && redRobot.currentCase.y === i) {
@@ -365,47 +444,51 @@ function generatePlateau() {
             } else if (blueRobot.currentCase.x === j && blueRobot.currentCase.y === i) {
                 plateau.grid[i][j].isOccupedByRobot = "blue";
             }
-
-            for (var p = 0; p < 4; p++) {
-                if (tableBasicFlagCaseRed[p].x === j && tableBasicFlagCaseRed[p].y === i && redRobot.currentCase.x === j && redRobot.currentCase.y === i) {
-                    plateau.grid[i][j].isOccupedByRobot = "red";
-                    plateau.grid[i][j].isOccupedByFlag = "red";
-                } else if (tableBasicFlagCaseRed[p].x === j && tableBasicFlagCaseRed[p].y === i) {
-                    plateau.grid[i][j].isOccupedByFlag = "red";
-
-
-                } else if (tableBasicFlagCaseBlue[p].x === j && tableBasicFlagCaseBlue[p].y === i && redRobot.currentCase.x === j && redRobot.currentCase.y === i) {
-                    plateau.grid[i][j].isOccupedByRobot = "blue";
-                    plateau.grid[i][j].isOccupedByFlag = "blue";
-
-                } else if (tableBasicFlagCaseBlue[p].x === j && tableBasicFlagCaseBlue[p].y === i) {
-                    plateau.grid[i][j].isOccupedByFlag = "blue";
-                }
-            }
         }
     }
 }
 
+/*Fonction principale qui fait dérouler le jeu */
 function playGame() {
-
-
+    var win=false;
+if(win ===false){
     if (indice < 5) {
-        console.log(redActionsSelected[indice]);
-        console.log(blueActionsSelected[indice]);
         if (redActionsSelected[indice] !== "annuler-rouge" && blueActionsSelected[indice] !== 'annuler-bleu') {
             actionRed(redActionsSelected[indice]);
             actionBlue(blueActionsSelected[indice]);
         }
-        //generatePlateau();
+
         displayGrid();
         indice++;
 
-        setTimeout(playGame, 1000);
+        console.log(verifWin());
+        if (verifWin() === "red") {
+            alert("Le joueur rouge a gagné");
+            win=true;
+        } else if (verifWin() === "blue") {
+            alert("Le joueur bleu a gagné");
+            win=true;
+        } else {
+            setTimeout(playGame, 1000);
+            round++;
+        }
+    } else if (indice == 5) {
+
+        if (round % 2 == 0) {
+            blockButton("blueActions", "play");
+            unblockButton("redActions");
+        } else {
+            blockButton("redActions", "play");
+            unblockButton("blueActions");
+        }
+        indice = 0;
     }
-    console.log(indice);
+
 }
 
+}
 
+/*Fonction qui prend en parametre une action du robot rouge et l'execute */
 function actionRed(action) {
     switch (action) {
         case 'sud-rouge':
@@ -435,7 +518,7 @@ function actionRed(action) {
     }
 }
 
-
+/*Fonction qui prend en parametre une action du robot bleu et l'execute */
 function actionBlue(action) {
     switch (action) {
         case 'sud-bleu':
@@ -463,4 +546,29 @@ function actionBlue(action) {
             blueRobot.repulse(redRobot, plateau);
             break;
     }
+}
+
+/*Fonction qui vérifie si il y a un gagnant entre les deux joueurs */
+function verifWin() {
+    var tmpRed = 0;
+    var tmpBlue = 0;
+    
+    for(var k=0;k<4;k++){
+        if(plateau.grid[basicPositionTableRed[k].y][basicPositionTableRed[k].x].isOccupedByFlag !== ""){
+            tmpRed++;
+        }else if(plateau.grid[basicPositionTableBlue[k].y][basicPositionTableBlue[k].x].isOccupedByFlag !== ""){
+            tmpBlue++;
+        }
+    }
+
+    
+
+    if (tmpBlue === 3) {
+        return "blue";
+    } else if (tmpRed === 3) {
+        return "red";
+    } else {
+        return false;
+    }
+
 }
